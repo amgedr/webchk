@@ -1,2 +1,3 @@
 # webchk
-Get the HTTP response codes of URLs.
+Get the HTTP response codes and headers of URLs.
+

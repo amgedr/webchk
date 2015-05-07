@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+"""
+Get HTTP response codes and headers of URLs.
+
+Usage:
+  webchk URL... [-o <file>]
+  webchk -i <file> [-o <file>]
+  webchk -h, --help
+  webchk -v, --version
+
+Options:
+  -i <file>, --input <file>     Read input from a file.
+  -o <file>, --output <file>    Save output to a file.
+  -h, --help                    Show this
+  -v, --version                 Print the version number
+"""
+
+import os
+from docopt import docopt
+import http.client
+from urllib.parse import urlparse
+
+version = "webchk 0.1"
+arguments = docopt(__doc__, version=version, help=True)
+
+
+def main():
+    urls_list = []
+
+    # if an input file is provided, place its content in urls_list
+    if arguments["--input"]:
+        # check if the file exists.
+        if os.path.isfile(arguments["--input"]):
+            input_file = open(arguments["--input"], "r")
+            urls_list.extend([u.strip("\n") for u in input_file])
+        else:
+            print("Error: The specified input file does not exists.")
+
+    # if any URLs were provided in the command-line
+    if arguments["URL"]:
+        urls_list.extend(arguments["URL"])
+
+    for u in urls_list:
+        print("{} - {}".format(u, http_get(u)))
+
+
+def http_get(url):
+    loc = urlparse(url)
+
+    try:
+        # if the scheme (http, https ...) is not available urlparse wont work
+        if loc.netloc == "":
+            url = "http://" + url
+            loc = urlparse(url)
+
+        conn = http.client.HTTPConnection(loc.netloc, port=loc.port)
+        conn.request("HEAD", loc.path)
+
+        resp = conn.getresponse()
+
+        return "{} {}".format( resp.status, resp.reason)
+
+    except BaseException as err:
+        return err
+
+
+if __name__ == "__main__":
+    main()
