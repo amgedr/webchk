@@ -25,7 +25,6 @@ import xml.etree.ElementTree as etree
 version = "webchk 0.1"
 arguments = docopt(__doc__, version=version, help=True)
 
-
 def main():
     urls_list = []
 
@@ -43,11 +42,10 @@ def main():
         urls_list.extend(arguments["URL"])
 
     for u in urls_list:
-        http_get(u)
-        #print("{} - {}".format(u, http_get(u)))
+        http_get(u, 0)
 
 
-def http_get(url):
+def http_get(url, level):    
     loc = urlparse(url)
 
     try:
@@ -60,8 +58,8 @@ def http_get(url):
         if loc.path.endswith(".xml"):      
             conn.request("GET", loc.path)   # download the contents of sitemap
             resp = conn.getresponse()
-            print("{} - {} {}".format(url, resp.status, resp.reason))
 
+            print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
 
             data = resp.read()  # read the contents of the XML file            
             rootxml = etree.fromstring(data)
@@ -69,12 +67,12 @@ def http_get(url):
             for i in rootxml:
                 for j in i:
                     if j.tag.endswith("loc"):  # get the <loc> tag's contents
-                        http_get(j.text.strip())
+                        http_get(j.text.strip(), level + 1)
 
         else:
             conn.request("HEAD", loc.path)
             resp = conn.getresponse()
-            print("{} - {} {}".format(url, resp.status, resp.reason))
+            print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
 
     except BaseException as err:
         return err
