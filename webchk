@@ -25,6 +25,7 @@ import xml.etree.ElementTree as etree
 version = "webchk 0.1"
 arguments = docopt(__doc__, version=version, help=True)
 
+
 def main():
     urls_list = []
 
@@ -45,7 +46,7 @@ def main():
         http_get(u, 0)
 
 
-def http_get(url, level):    
+def http_get(url, level):
     loc = urlparse(url)
 
     try:
@@ -55,13 +56,13 @@ def http_get(url, level):
             loc = urlparse(url)
 
         conn = http.client.HTTPConnection(loc.netloc, port=loc.port)
-        if loc.path.endswith(".xml"):      
+        if loc.path.endswith(".xml"):
             conn.request("GET", loc.path)   # download the contents of sitemap
             resp = conn.getresponse()
 
             print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
 
-            data = resp.read()  # read the contents of the XML file            
+            data = resp.read()  # read the contents of the XML file
             rootxml = etree.fromstring(data)
 
             for i in rootxml:
@@ -73,6 +74,11 @@ def http_get(url, level):
             conn.request("HEAD", loc.path)
             resp = conn.getresponse()
             print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
+
+            # if response code is 301 Moved Permanently or 302 Redirected
+            if resp.status == 301 or resp.status == 302:
+                # get the URL being redirected to
+                http_get(resp.getheader("Location"), level + 1)
 
     except BaseException as err:
         return err
