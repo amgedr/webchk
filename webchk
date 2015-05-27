@@ -5,13 +5,14 @@ Get HTTP response codes and headers of URLs.
 
 Usage:
   webchk URL... [-o <file>]
-  webchk -i <file> [-o <file>]
+  webchk [-l] -i <file> [-o <file>]
   webchk -h, --help
   webchk -v, --version
 
 Options:
   -i <file>, --input <file>     Read input from a file.
   -o <file>, --output <file>    Save output to a file.
+  -l, --list                    Print out the URLs without checking them.
   -h, --help                    Show this
   -v, --version                 Print the version number
 """
@@ -54,6 +55,10 @@ def http_get(url, level):
         if loc.netloc == "":
             url = "http://" + url
             loc = urlparse(url)
+
+        if arguments["--list"]:
+            print("{}{}".format("  " * level, loc.geturl()))
+            return
 
         conn = http.client.HTTPConnection(loc.netloc, port=loc.port)
         if loc.path.endswith(".xml"):
