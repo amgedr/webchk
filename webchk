@@ -34,8 +34,8 @@ def main():
     if arguments["--input"]:
         # check if the file exists.
         if os.path.isfile(arguments["--input"]):
-            input_file = open(arguments["--input"], "r")
-            urls_list.extend([u.strip("\n") for u in input_file])
+            # read all non-empty lines for the input file
+            urls_list = filter(None, (u.rstrip() for u in open(arguments["--input"])))
         else:
             print("Error: The specified input file does not exists.")
 
