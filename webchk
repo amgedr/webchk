@@ -4,15 +4,16 @@
 Get HTTP response codes and headers of URLs.
 
 Usage:
-  webchk URL... [-o <file>]
-  webchk [-l] -i <file> [-o <file>]
+  webchk [-al] URL... [-o <file>]
+  webchk [-al] -i <file> [-o <file>]
   webchk -h, --help
   webchk -v, --version
 
 Options:
   -i <file>, --input <file>     Read input from a file.
   -o <file>, --output <file>    Save output to a file.
-  -l, --list                    Print out the URLs without checking them.
+  -a, --all                     Display the HTTP header.
+  -l, --list                    Print URLs without checking them.
   -h, --help                    Show this
   -v, --version                 Print the version number
 """
@@ -67,6 +68,10 @@ def http_get(url, level):
 
             print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
 
+            if arguments["--all"]:
+                for i, v in resp.getheaders():
+                    print("{}{}: {}".format("  " * (level + 1), i, v))
+
             data = resp.read()  # read the contents of the XML file
             rootxml = etree.fromstring(data)
 
@@ -80,6 +85,10 @@ def http_get(url, level):
             resp = conn.getresponse()
             print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
 
+            if arguments["--all"]:
+                for i, v in resp.getheaders():
+                    print("{}{}: {}".format("  " * (level + 1), i, v))
+            
             # if response code is 301 Moved Permanently or 302 Redirected
             if resp.status == 301 or resp.status == 302:
                 # get the URL being redirected to
