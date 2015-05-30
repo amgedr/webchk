@@ -19,6 +19,7 @@ Options:
 """
 
 import os
+import sys
 from docopt import docopt
 import http.client
 from urllib.parse import urlparse
@@ -26,7 +27,6 @@ import xml.etree.ElementTree as etree
 
 version = "webchk 0.1"
 arguments = docopt(__doc__, version=version, help=True)
-
 
 def main():
     urls_list = []
@@ -44,8 +44,13 @@ def main():
     if arguments["URL"]:
         urls_list.extend(arguments["URL"])
 
+    if arguments["--output"]:
+        sys.stdout = open(arguments["--output"], "w")
+
     for u in urls_list:
         http_get(u, 0)
+
+    sys.stdout.close()
 
 
 def http_get(url, level):
