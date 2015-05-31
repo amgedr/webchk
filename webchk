@@ -20,6 +20,7 @@ Options:
 
 import os
 import sys
+import socket
 from docopt import docopt
 import http.client
 from urllib.parse import urlparse
@@ -27,6 +28,7 @@ import xml.etree.ElementTree as etree
 
 version = "webchk 0.1"
 arguments = docopt(__doc__, version=version, help=True)
+
 
 def main():
     urls_list = []
@@ -36,7 +38,8 @@ def main():
         # check if the file exists.
         if os.path.isfile(arguments["--input"]):
             # read all non-empty lines for the input file
-            urls_list = filter(None, (u.rstrip() for u in open(arguments["--input"])))
+            urls_list = filter(
+                None, (u.rstrip() for u in open(arguments["--input"])))
         else:
             print("Error: The specified input file does not exists.")
 
@@ -71,7 +74,8 @@ def http_get(url, level):
             conn.request("GET", loc.path)   # download the contents of sitemap
             resp = conn.getresponse()
 
-            print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
+            print("{}{} - {} {}".format(
+                "  " * level, url, resp.status, resp.reason))
 
             if arguments["--all"]:
                 for i, v in resp.getheaders():
@@ -88,19 +92,22 @@ def http_get(url, level):
         else:
             conn.request("HEAD", loc.path)
             resp = conn.getresponse()
-            print("{}{} - {} {}".format("  " * level, url, resp.status, resp.reason))
+            print("{}{} - {} {}".format(
+                    "  " * level, url, resp.status, resp.reason))
 
             if arguments["--all"]:
                 for i, v in resp.getheaders():
                     print("{}{}: {}".format("  " * (level + 1), i, v))
-            
+
             # if response code is 301 Moved Permanently or 302 Redirected
             if resp.status == 301 or resp.status == 302:
                 # get the URL being redirected to
                 http_get(resp.getheader("Location"), level + 1)
 
+    except socket.gaierror:
+        print(url, "- Could not resolve name")
     except BaseException as err:
-        return err
+        print("{} - Error: {}".format(url, err))
 
 
 if __name__ == "__main__":
