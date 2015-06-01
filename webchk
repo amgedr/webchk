@@ -3,6 +3,8 @@
 """
 Get HTTP response codes and headers of URLs.
 
+Homepage: http://codehill.com/projects/webchk
+
 Usage:
   webchk [-al] URL... [-o <file>]
   webchk [-al] -i <file> [-o <file>]
@@ -31,35 +33,39 @@ arguments = docopt(__doc__, version=version, help=True)
 
 
 def main():
-    urls_list = []
+    try:
+        urls_list = []
 
-    # if an input file is provided, place its content in urls_list
-    if arguments["--input"]:
-        # check if the file exists.
-        if os.path.isfile(arguments["--input"]):
-            # read all non-empty lines for the input file
-            urls_list = filter(
-                None, (u.rstrip() for u in open(arguments["--input"])))
+        # if an input file is provided, place its content in urls_list
+        if arguments["--input"]:
+            # check if the file exists.
+            if os.path.isfile(arguments["--input"]):
+                # read all non-empty lines for the input file
+                urls_list = filter(
+                    None, (u.rstrip() for u in open(arguments["--input"])))
         else:
             print("Error: The specified input file does not exists.")
 
-    # if any URLs were provided in the command-line
-    if arguments["URL"]:
-        urls_list.extend(arguments["URL"])
+        # if any URLs were provided in the command-line
+        if arguments["URL"]:
+            urls_list.extend(arguments["URL"])
 
-    if arguments["--output"]:
-        sys.stdout = open(arguments["--output"], "w")
+        if arguments["--output"]:
+            sys.stdout = open(arguments["--output"], "w")
 
-    for u in urls_list:
-        http_get(u, 0)
+        for u in urls_list:
+            http_get(u, 0)
 
-    sys.stdout.close()
+        sys.stdout.close()
 
+    except (KeyboardInterrupt, SystemExit):
+        print("\r  \nPocess cancelled by user")
+        sys.exit()
 
 def http_get(url, level):
-    loc = urlparse(url)
-
     try:
+        loc = urlparse(url)
+
         # if the scheme (http, https ...) is not available urlparse wont work
         if loc.netloc == "":
             url = "http://" + url
@@ -104,6 +110,10 @@ def http_get(url, level):
                 # get the URL being redirected to
                 http_get(resp.getheader("Location"), level + 1)
 
+    except (KeyboardInterrupt, SystemExit):
+        raise
+        #print("Process cancelled by user")
+        #sys.exit()
     except socket.gaierror:
         print(url, "- Could not resolve name")
     except BaseException as err:
