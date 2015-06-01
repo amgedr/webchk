@@ -43,8 +43,8 @@ def main():
                 # read all non-empty lines for the input file
                 urls_list = filter(
                     None, (u.rstrip() for u in open(arguments["--input"])))
-        else:
-            print("Error: The specified input file does not exists.")
+            else:
+                print("Error: The specified input file does not exists.")
 
         # if any URLs were provided in the command-line
         if arguments["URL"]:
