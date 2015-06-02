@@ -116,8 +116,6 @@ def http_get(url, level):
 
     except (KeyboardInterrupt, SystemExit):
         raise
-        #print("Process cancelled by user")
-        #sys.exit()
     except socket.gaierror:
         print(url, "- Could not resolve name")
     except BaseException as err:
