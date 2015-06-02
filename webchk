@@ -44,7 +44,7 @@ def main():
                 urls_list = filter(
                     None, (u.rstrip() for u in open(arguments["--input"])))
             else:
-                print("Error: The specified input file does not exists.")
+                print("Error: Input file does not exists.", file=sys.stderr)
 
         # if any URLs were provided in the command-line
         if arguments["URL"]:
@@ -59,8 +59,12 @@ def main():
         sys.stdout.close()
 
     except (KeyboardInterrupt, SystemExit):
-        print("\r  \nPocess cancelled by user")
-        sys.exit()
+        print("\r  \nPocess cancelled by user", file=sys.stderr)
+        sys.exit(1)
+    except Exception as err:
+        print("Error: {}".format(sys.exc_info()), file=sys.stderr)
+        sys.exit(2)
+
 
 def http_get(url, level):
     try:
