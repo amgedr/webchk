@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 """
-Get HTTP response codes and headers of URLs.
-
+webchk v0.1 - Check HTTP status codes, response headers and redirects. 
+This is a free software and it comes with absolutely no warranty.
+You can distribute and modify it under terms of BSD Revised License.
 Homepage: http://codehill.com/projects/webchk
 
 Usage:
@@ -28,8 +29,7 @@ import http.client
 from urllib.parse import urlparse
 import xml.etree.ElementTree as etree
 
-version = "webchk 0.1"
-arguments = docopt(__doc__, version=version, help=True)
+arguments = docopt(__doc__, help=True)
 
 
 def main():
