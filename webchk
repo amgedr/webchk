@@ -28,6 +28,7 @@ from docopt import docopt
 import http.client
 from urllib.parse import urlparse
 import xml.etree.ElementTree as etree
+from datetime import datetime
 
 arguments = docopt(__doc__, help=True)
 
@@ -79,13 +80,18 @@ def http_get(url, level):
             print("{}{}".format("  " * level, loc.geturl()))
             return
 
+        start_time = datetime.now()
+
         conn = http.client.HTTPConnection(loc.netloc, port=loc.port)
         if loc.path.endswith(".xml"):
             conn.request("GET", loc.path)   # download the contents of sitemap
             resp = conn.getresponse()
 
-            print("{}{} - {} {}".format(
-                "  " * level, url, resp.status, resp.reason))
+            # calculate download time in microseconds
+            time = (datetime.now() - start_time).total_seconds()
+
+            print("{}{} - {} {} ({:.3f}s)".format(
+                "  " * level, url, resp.status, resp.reason, time))
 
             if arguments["--all"]:
                 for i, v in resp.getheaders():
@@ -102,8 +108,12 @@ def http_get(url, level):
         else:
             conn.request("HEAD", loc.path)
             resp = conn.getresponse()
-            print("{}{} - {} {}".format(
-                    "  " * level, url, resp.status, resp.reason))
+
+            # calculate download time in microseconds
+            time = (datetime.now() - start_time).total_seconds()
+
+            print("{}{} - {} {} ({:.3f}s)".format(
+                    "  " * level, url, resp.status, resp.reason, time))
 
             if arguments["--all"]:
                 for i, v in resp.getheaders():
