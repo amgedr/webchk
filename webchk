@@ -7,15 +7,16 @@ You can distribute and modify it under terms of BSD Revised License.
 Homepage: http://codehill.com/projects/webchk
 
 Usage:
-  webchk [-al] URL... [-o <file>]
-  webchk [-al] -i <file> [-o <file>]
+  webchk [-alp] URL... [-o <file>]
+  webchk [-alp] -i <file> [-o <file>]
   webchk -h, --help
   webchk -v, --version
 
 Options:
   -i <file>, --input <file>     Read input from a file.
   -o <file>, --output <file>    Save output to a file.
-  -a, --all                     Display the HTTP header.
+  -p, --parse                   Parse contents of URLs with .xml extention.
+  -a, --all                     Display the complete HTTP header.
   -l, --list                    Print URLs without checking them.
   -h, --help                    Show this
   -v, --version                 Print the version number
@@ -83,7 +84,7 @@ def http_get(url, level):
         start_time = datetime.now()
 
         conn = http.client.HTTPConnection(loc.netloc, port=loc.port)
-        if loc.path.endswith(".xml"):
+        if loc.path.endswith(".xml") and arguments["--parse"]:
             conn.request("GET", loc.path)   # download the contents of sitemap
             resp = conn.getresponse()
 
