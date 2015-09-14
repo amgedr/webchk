@@ -31,7 +31,7 @@ from urllib.parse import urlparse
 import xml.etree.ElementTree as etree
 from datetime import datetime
 
-arguments = docopt(__doc__, help=True)
+arguments = docopt(__doc__, help=True, version="webchk 0.1")
 
 
 def main():
