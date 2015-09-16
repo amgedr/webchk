@@ -77,10 +77,6 @@ def http_get(url, level):
             url = "http://" + url
             loc = urlparse(url)
 
-        if arguments["--list"]:
-            print("{}{}".format("  " * level, loc.geturl()))
-            return
-
         start_time = datetime.now()
 
         conn = http.client.HTTPConnection(loc.netloc, port=loc.port)
@@ -113,6 +109,10 @@ def http_get(url, level):
             # calculate download time in microseconds
             time = (datetime.now() - start_time).total_seconds()
 
+            if arguments["--list"]:
+                print("{}{}".format("  " * level, loc.geturl()))
+                return
+ 
             print("{}{} - {} {} ({:.3f}s)".format(
                     "  " * level, url, resp.status, resp.reason, time))
 
