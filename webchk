@@ -7,18 +7,19 @@ You can distribute and modify it under terms of BSD Revised License.
 Homepage: http://codehill.com/projects/webchk
 
 Usage:
-  webchk [-alps] URL... [-o <file>]
-  webchk [-alps] -i <file> [-o <file>]
+  webchk [-alpsf] URL... [-o <file>]
+  webchk [-alpsf] -i <file> [-o <file>]
   webchk -h, --help
   webchk -v, --version
 
 Options:
-  -i <file>, --input <file>     Read input from a file.
-  -o <file>, --output <file>    Save output to a file.
-  -p, --parse                   Parse contents of URLs with .xml extention.
-  -a, --all                     Display the complete HTTP header.
-  -l, --list                    Print URLs without checking them.
+  -i <file>, --input <file>     Read input from a file
+  -o <file>, --output <file>    Save output to a file
+  -p, --parse                   Parse contents of URLs with .xml extention
+  -a, --all                     Display the complete HTTP header
+  -l, --list                    Print URLs without checking them
   -s, --summary                 Print a summary only
+  -f, --format                  Format the URLs heirarchically
   -h, --help                    Show this
   -v, --version                 Print the version number
 """
@@ -95,12 +96,18 @@ def http_get(url, level):
             # calculate download time in microseconds
             time = (datetime.now() - start_time).total_seconds()
 
-            print("{}{} - {} {} ({:.3f}s)".format(
-                "  " * level, url, resp.status, resp.reason, time))
+            if arguments["--format"]:
+                print("{}".format(" " * level), end="")
+
+            print("{} - {} {} ({:.3f}s)".format(
+                url, resp.status, resp.reason, time))
 
             if arguments["--all"]:
                 for i, v in resp.getheaders():
-                    print("{}{}: {}".format("  " * (level + 1), i, v))
+                    if arguments["--format"]:
+                        print("{}".format(" " * (level + 1)), end="")
+
+                    print("{}: {}".format(i, v))
 
             data = resp.read()  # read the contents of the XML file
             rootxml = etree.fromstring(data)
@@ -117,16 +124,22 @@ def http_get(url, level):
             # calculate download time in microseconds
             time = (datetime.now() - start_time).total_seconds()
 
+            if arguments["--format"]:
+                print("{}".format(" " * level), end="")
+
             if arguments["--list"]:
-                print("{}{}".format("  " * level, loc.geturl()))
+                print(loc.geturl())
                 return
 
-            print("{}{} - {} {} ({:.3f}s)".format(
-                    "  " * level, url, resp.status, resp.reason, time))
+            print("{} - {} {} ({:.3f}s)".format(
+                url, resp.status, resp.reason, time))
 
             if arguments["--all"]:
                 for i, v in resp.getheaders():
-                    print("{}{}: {}".format("  " * (level + 1), i, v))
+                    if arguments["--format"]:
+                        print(" ")
+
+                    print("{}: {}".format(i, v))
 
             # if response code is 301 Moved Permanently or 302 Redirected
             if resp.status == 301 or resp.status == 302:
