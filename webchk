@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 """
-webchk v0.1 - Check HTTP status codes, response headers and redirects. 
+webchk v0.1 - Check HTTP status codes, response headers and redirects.
 This is a free software and it comes with absolutely no warranty.
 You can distribute and modify it under terms of BSD Revised License.
 Homepage: http://codehill.com/projects/webchk
 
 Usage:
-  webchk [-alp] URL... [-o <file>]
-  webchk [-alp] -i <file> [-o <file>]
+  webchk [-alps] URL... [-o <file>]
+  webchk [-alps] -i <file> [-o <file>]
   webchk -h, --help
   webchk -v, --version
 
@@ -18,6 +18,7 @@ Options:
   -p, --parse                   Parse contents of URLs with .xml extention.
   -a, --all                     Display the complete HTTP header.
   -l, --list                    Print URLs without checking them.
+  -s, --summary                 Print a summary only
   -h, --help                    Show this
   -v, --version                 Print the version number
 """
@@ -32,6 +33,8 @@ import xml.etree.ElementTree as etree
 from datetime import datetime
 
 arguments = docopt(__doc__, help=True, version="webchk 0.1")
+url_count = 0
+http_resp = {}
 
 
 def main():
@@ -58,9 +61,11 @@ def main():
         for u in urls_list:
             http_get(u, 0)
 
+        print_summary()
         sys.stdout.close()
 
     except (KeyboardInterrupt, SystemExit):
+        print_summary()
         print("\r  \nPocess cancelled by user", file=sys.stderr)
         sys.exit(1)
     except Exception as err:
@@ -69,6 +74,9 @@ def main():
 
 
 def http_get(url, level):
+    global url_count, http_resp
+    url_count += 1
+
     try:
         loc = urlparse(url)
 
@@ -112,7 +120,7 @@ def http_get(url, level):
             if arguments["--list"]:
                 print("{}{}".format("  " * level, loc.geturl()))
                 return
- 
+
             print("{}{} - {} {} ({:.3f}s)".format(
                     "  " * level, url, resp.status, resp.reason, time))
 
@@ -125,12 +133,27 @@ def http_get(url, level):
                 # get the URL being redirected to
                 http_get(resp.getheader("Location"), level + 1)
 
+        # increment stats
+        http_resp["{} {}".format(resp.status, resp.reason)] = 1
+
     except (KeyboardInterrupt, SystemExit):
         raise
     except socket.gaierror:
         print(url, "- Could not resolve name")
     except BaseException as err:
         print("{} - Error: {}".format(url, err))
+
+
+def print_summary():
+    if url_count == 0:
+        return
+
+    print("\nTotal URLs: {}".format(url_count))
+
+    if arguments["--summary"]:
+        print()
+        for status, count in http_resp.items():
+            print("{}: {}".format(status, count))
 
 
 if __name__ == "__main__":
