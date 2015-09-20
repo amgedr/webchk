@@ -146,8 +146,10 @@ def http_get(url, level):
                 # get the URL being redirected to
                 http_get(resp.getheader("Location"), level + 1)
 
-        # increment stats
-        http_resp["{} {}".format(resp.status, resp.reason)] = 1
+        key = "{} {}".format(resp.status, resp.reason)
+
+        # increment stats if exist, otherwise create it
+        http_resp[key] = http_resp.get(key, 0) + 1
 
     except (KeyboardInterrupt, SystemExit):
         raise
