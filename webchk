@@ -98,6 +98,9 @@ def http_get(url, level):
 
             print_url(url, resp, time, level)
 
+            if resp.status != 200:
+                return
+
             if arguments["--all"]:
                 for i, v in resp.getheaders():
                     if arguments["--format"]:
