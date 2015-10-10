@@ -168,12 +168,12 @@ def print_summary():
     if url_count == 0:
         return
 
-    print("\nTotal URLs: {}".format(url_count))
-
     if arguments["--summary"]:
         print()
         for status, count in http_resp.items():
             print("{}: {}".format(status, count))
+
+        print("\nTotal URLs: {}".format(url_count))
 
 
 if __name__ == "__main__":
