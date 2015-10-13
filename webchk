@@ -69,6 +69,11 @@ def main():
         print_summary()
         print("\r  \nPocess cancelled by user", file=sys.stderr)
         sys.exit(1)
+    except PermissionError as err:
+        f = getattr(err, 'filename', "")
+        print("Error: could not read file {}. Permission denied.".format(f),
+              file=sys.stderr)
+        sys.exit(3)
     except Exception as err:
         print("Error: {}".format(sys.exc_info()), file=sys.stderr)
         sys.exit(2)
@@ -152,9 +157,9 @@ def http_get(url, level):
     except (KeyboardInterrupt, SystemExit):
         raise
     except socket.gaierror:
-        print(url, "- Could not resolve name")
+        print(url, "- Could not resolve name", file=sys.stderr)
     except BaseException as err:
-        print("{} - Error: {}".format(url, err))
+        print("{} - Error: {}".format(url, err), file=sys.stderr)
 
 
 def print_url(url, resp, time, level):
