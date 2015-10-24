@@ -91,7 +91,6 @@ def http_get(url, level):
             url = "http://" + url
             loc = urlparse(url)
 
-        print('\n', loc)
         start_time = datetime.now()
 
         conn = http.client.HTTPConnection(loc.netloc) 
