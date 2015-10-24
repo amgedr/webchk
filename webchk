@@ -91,9 +91,11 @@ def http_get(url, level):
             url = "http://" + url
             loc = urlparse(url)
 
+        print('\n', loc)
         start_time = datetime.now()
 
-        conn = http.client.HTTPConnection(loc.netloc, port=loc.port)
+        conn = http.client.HTTPConnection(loc.netloc) 
+
         if loc.path.endswith(".xml") and arguments["--parse"]:
             conn.request("GET", loc.path)   # download the contents of sitemap
             resp = conn.getresponse()
