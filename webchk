@@ -138,17 +138,14 @@ def http_get(url, level):
 
             print_url(url, resp, time, level)
 
-            if arguments["--all"]:
-                for i, v in resp.getheaders():
-                    if arguments["--format"]:
-                        print(" ")
-
-                    print("{}: {}".format(i, v))
-
             # if response code is 301 Moved Permanently or 302 Redirected
             if resp.status == 301 or resp.status == 302:
                 # get the URL being redirected to
                 http_get(resp.getheader("Location"), level + 1)
+
+            if arguments["--all"]:
+                for i, v in resp.getheaders():
+                    print("{}: {}".format(i, v))
 
         key = "{} {}".format(resp.status, resp.reason)
 
