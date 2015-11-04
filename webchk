@@ -60,7 +60,10 @@ def main():
             sys.stdout = open(arguments["--output"], "w")
 
         for u in urls_list:
-            http_get(u, 0)
+            url = u.strip()
+
+            if len(url) > 0:
+                http_get(url, 0)
 
         print_summary()
         sys.stdout.close()
