@@ -42,3 +42,10 @@ webchk -p http://example.com/sitemap.xml
 # List the URLs in a sitemap without checking their status:
 webchk -lp http://example.com/sitemap.xml   
 ```
+
+### Contributing
+* If you've got any suggestions or questions, [please create an issue here](https://github.com/codehill/webchk/issues).
+* If you want to fix a bug or implement a feature, please feel free to do so. Just send me a pull request.
+
+### License
+This project is licensed under a BSD license. See the included [LICENSE file](LICENSE) for more details.
