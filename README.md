@@ -48,4 +48,4 @@ webchk -lp http://example.com/sitemap.xml
 * If you want to fix a bug or implement a feature, please feel free to do so. Just send me a pull request.
 
 ### License
-This project is licensed under a BSD license. See the included [LICENSE file](LICENSE) for more details.
+This project is licensed under a MIT license. See the included [LICENSE file](LICENSE) for more details.
