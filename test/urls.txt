@@ -1,0 +1,14 @@
+https://httpstat.us:443/200
+
+https://httpstat.us/200
+httpstat.us/301
+
+
+http://httpstat.us:80/302
+http://httpbin.org/status/200
+
+
+http://httpbin.org/status/404
+http://httpbin.org/relative-redirect/6
+http://httpbin.org/absolute-redirect/6
+
