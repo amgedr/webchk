@@ -31,6 +31,7 @@ def process_urls(urls, list_only=False, parse_xml=False):
 
 
 def main():
+    """Main entry to webchk."""
     parser = get_parser()
     args = parser.parse_args()
 

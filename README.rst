@@ -18,23 +18,62 @@ webchk
      :alt: Updates
 
 
-A command-line tool for checking HTTP status codes and response headers of URLs
+webchk is a command-line tool for checking the HTTP status codes and response
+header of URLs. It accepts one or more URLs as arguments as well as a sitemap
+URL to download, extract the URLs in it and check their statuses. It's also
+open source with a MIT license.
 
 
-* Free software: MIT license
-* Documentation: https://webchk.readthedocs.io.
+Installation
+------------
+webchk is available on PyPI and can be installed using pip with the following
+command::
+
+    $ pip install webchk
 
 
-Features
---------
+Usage
+-----
+::
 
-* TODO
+ webchk [-h] [-i INPUT] [-o OUTPUT] [-p] [-a] [-l] [-s] [-f] [-v]
+              [urls [urls ...]]
 
-Credits
----------
+ positional arguments:
+   urls
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+ optional arguments:
+   -h, --help                   show this help message and exit
+   -i INPUT, --input INPUT      Read input from a file
+   -o OUTPUT, --output OUTPUT   Save output to a file
+   -p, --parse                  Follow links listed in .xml URLs
+   -l, --list                   Print URLs without checking them
+   -v, --version                Print the version number
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+Examples
+~~~~~~~~
+Check a list of URLs from a file (one URL per line)::
+
+    $ webchk -i urls.txt
+
+Check the status of a sitemap file and all the URLs listed in it::
+
+    $ webchk -p http://example.com/sitemap.xml
+
+List the URLs in a file without checking their HTTP status::
+
+    $ webchk -li urls.txt
+
+Check the URLs in a file and .xml files in it::
+
+    $ webchk -pi urls.txt
+
+List the URLs in a file and .xml files in it::
+
+    $ webchk -pli urls.txt
+
+List the URLs in a sitemap without checking their status::
+
+    $ webchk -lp http://example.com/sitemap.xml
 

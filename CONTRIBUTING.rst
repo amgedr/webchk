@@ -68,6 +68,7 @@ Ready to contribute? Here's how to set up `webchk` for local development.
 
     $ mkvirtualenv webchk
     $ cd webchk/
+    $ pip install requirements_dev.txt
     $ python setup.py develop
 
 4. Create a branch for local development::
