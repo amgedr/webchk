@@ -17,6 +17,9 @@ webchk
      :target: https://pyup.io/repos/github/amgedr/webchk/
      :alt: Updates
 
+.. image:: https://readthedocs.org/projects/webchk/badge/?version=latest
+     :target: http://webchk.readthedocs.io/en/latest/?badge=latest
+     :alt: Documentation Status
 
 webchk is a command-line tool for checking the HTTP status codes and response
 header of URLs. It accepts one or more URLs as arguments as well as a sitemap
