@@ -81,7 +81,7 @@ def _http_request(loc, get_request=False):
 
     result = Result(loc.geturl())
     result.status = resp.status
-    result.dec = resp.reason
+    result.desc = resp.reason
     result.fill_headers(resp.getheaders())
 
     # status code is not 204 (no content) and not a redirect
