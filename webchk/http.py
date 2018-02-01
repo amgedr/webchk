@@ -27,8 +27,7 @@ class Result:
     def __repr__(self):
         if self.status == 0:
             return '{} ... {}'.format(self.url, self.desc)
-        return '{} ... {} {} ({})'.format(
-            self.url, self.status, self.desc, self.latency)
+        return '{} ... {} {} ({})'.format(self.url, self.status, self.desc, self.latency)
 
     def fill_headers(self, headers):
         """Takes a list of tuples and convers it a dictionary."""
@@ -72,11 +71,9 @@ def _http_request(loc, get_request=False):
     Does a HEAD HTTP request if get_request is False and GET if True.
     """
     conn = _http_connect(loc)
+    method = 'GET' if get_request else 'HEAD'
 
-    if get_request:
-        conn.request('GET', loc.path)
-    else:
-        conn.request('HEAD', loc.path)
+    conn.request(method, loc.path)
     resp = conn.getresponse()
 
     result = Result(loc.geturl())
@@ -109,10 +106,8 @@ def http_response(url, parse=False):
 
     try:
         start = timeit.default_timer()
-        if parse and url.endswith('.xml'):
-            result = _http_request(loc, get_request=True)
-        else:
-            result = _http_request(loc)
+        get_request = parse and url.endswith('.xml')
+        result = _http_request(loc, get_request=get_request)
         result.latency = '{:2.3}'.format(timeit.default_timer() - start)
 
         # if response code is a HTTP redirect then follow it recursively
