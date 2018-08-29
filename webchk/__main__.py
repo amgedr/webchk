@@ -66,11 +66,11 @@ def main():
         process_urls(urls, list_only=args.list, parse_xml=args.parse)
 
     except FileExistsError as ex:
-        print(ex)
+        print(ex, file=sys.stderr)
     except FileNotFoundError as ex:
-        print('The file {} does not exist'.format(ex.filename))
+        print('The file {} does not exist'.format(ex.filename), file=sys.stderr)
     except KeyboardInterrupt:
-        print('\nProcess cancelled')
+        print('\nProcess cancelled', file=sys.stderr)
     else:
         return 0
     return 1
