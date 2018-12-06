@@ -3,7 +3,7 @@ History
 =======
 
 1.0.0 (2018-12-06)
------------------
+------------------
 
 * Linked to http://codehill.com/projects/webchk/ instead of readthedocs.io
 
