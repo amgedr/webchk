@@ -4,21 +4,18 @@ webchk
 
 
 .. image:: https://img.shields.io/pypi/v/webchk.svg
-        :target: https://pypi.python.org/pypi/webchk
+        :target: https://pypi.org/project/webchk/
 
 .. image:: https://img.shields.io/travis/amgedr/webchk.svg
         :target: https://travis-ci.org/amgedr/webchk
 
-.. image:: https://readthedocs.org/projects/webchk/badge/?version=latest
-        :target: https://webchk.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+.. image:: https://img.shields.io/github/license/amgedr/webchk.svg
+        :target: https://github.com/amgedr/webchk/blob/master/LICENSE
 
 webchk is a command-line tool developed in Python 3 for checking the HTTP
 status codes and response headers of URLs. It accepts one or more URLs as
 arguments. Furthermore, a sitemap URL can be passed using the -p option to
 download its content, extract the URLs and check their statuses.
-
-http://webchk.readthedocs.io/en/latest/
 
 
 Installation
