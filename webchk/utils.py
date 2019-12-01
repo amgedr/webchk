@@ -12,12 +12,36 @@ def get_parser():
     parser.add_argument('urls', nargs='*')
     parser.add_argument('-i', '--input', help='Read input from a file')
     parser.add_argument('-o', '--output', help='Save output to a file')
-    parser.add_argument('-p', '--parse', help='Follow links listed in .xml URLs', action='store_true')
-    parser.add_argument('-a', '--all', help='Display the complete HTTP header', action='store_true')
-    parser.add_argument('-l', '--list', help='Print URLs without checking them', action='store_true')
-    parser.add_argument('-s', '--summary', help='Print a summary only', action='store_true')
-    parser.add_argument('-f', '--format', help='Format the URLs heirarchically', action='store_true')
-    parser.add_argument('-v', '--version', help='Print the version number', action='store_true')
+    parser.add_argument(
+        '-p', '--parse',
+        help='Follow links listed in .xml URLs',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-a', '--all',
+        help='Display the complete HTTP header',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-l', '--list',
+        help='Print URLs without checking them',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-s', '--summary',
+        help='Print a summary only',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-f', '--format',
+        help='Format the URLs heirarchically',
+        action='store_true'
+    )
+    parser.add_argument(
+        '-v', '--version',
+        help='Print the version number',
+        action='store_true'
+    )
     return parser
 
 

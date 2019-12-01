@@ -27,7 +27,9 @@ class Result:
     def __repr__(self):
         if self.status == 0:
             return '{} ... {}'.format(self.url, self.desc)
-        return '{} ... {} {} ({})'.format(self.url, self.status, self.desc, self.latency)
+        return '{} ... {} {} ({})'.format(
+            self.url, self.status, self.desc, self.latency
+        )
 
     def fill_headers(self, headers):
         """Takes a list of tuples and convers it a dictionary."""
