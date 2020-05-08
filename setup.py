@@ -8,7 +8,7 @@ with open('HISTORY.rst') as history_file:
 
 setup(
     name='webchk',
-    version='1.0.1',
+    version='1.0.2',
     packages=['webchk'],
     test_suite='test',
     url='https://codehill.com/projects/webchk',
@@ -29,6 +29,8 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Site Management",

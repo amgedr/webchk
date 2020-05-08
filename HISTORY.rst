@@ -2,6 +2,19 @@
 History
 =======
 
+1.0.2 (2020-05-08)
+------------------
+
+* Add Python versions 3.7 and 3.8 to the list of tested versions
+
+
+1.0.1 (2020-05-08)
+------------------
+
+* Fixed: Parsing sitemaps enters an endless loop
+* Fixed: Parsing a URL that does not exists exits with an unhandled exception
+
+
 1.0.0 (2018-12-06)
 ------------------
 
