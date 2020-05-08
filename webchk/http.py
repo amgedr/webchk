@@ -112,6 +112,9 @@ def http_response(url, parse=False):
         result = _http_request(loc, get_request=get_request)
         result.latency = '{:2.3}'.format(timeit.default_timer() - start)
 
+        if 400 <= result.status < 500:
+            return result
+
         # if response code is a HTTP redirect then follow it recursively
         if result.status in (301, 302, 303, 307, 308):
             # if URL in Location is a relative URL, ie starts with a /, then
