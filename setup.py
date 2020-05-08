@@ -8,7 +8,7 @@ with open('HISTORY.rst') as history_file:
 
 setup(
     name='webchk',
-    version='1.0.1',
+    version='1.0.2',
     packages=['webchk'],
     test_suite='test',
     url='https://codehill.com/projects/webchk',
