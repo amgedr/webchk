@@ -14,8 +14,6 @@ class Http(unittest.TestCase):
             'http://httpbin.org/': (200, 'httpbin.org'),
             'http://httpbin.org/status/200': (200, 'httpbin.org'),
             'http://httpbin.org/status/404': (404, 'httpbin.org'),
-            'http://httpbin.org/relative-redirect/6': (302, 'httpbin.org'),
-            'http://httpbin.org/absolute-redirect/6': (302, 'httpbin.org'),
         }
 
     def test_parse_url(self):
@@ -28,33 +26,17 @@ class Http(unittest.TestCase):
             resp_code = http_response(url).status
             self.assertEqual(resp_code, result[0], url)
 
-    def test_relative_redirect_follows(self):
-        url = 'http://httpbin.org/relative-redirect/{}'
-        resp = http_response(url.format(3))
-        count = 3
+    def test_redirect_follows(self):
+        url = 'https://httpstat.us/307'
+        resp = http_response(url)
         total = 0
         while resp.redirect:
             fmt = '{} ... {} {} ({})'.format(
                 resp.url, resp.status, resp.desc, resp.latency)
             self.assertEqual(str(resp), fmt)
-            count -= 1
             total += 1
             resp = resp.redirect
-        self.assertEqual(total, 3)
-
-    def test_absolute_redirect_follows(self):
-        url = 'http://httpbin.org/absolute-redirect/{}'
-        resp = http_response(url.format(3))
-        count = 3
-        total = 0
-        while resp.redirect:
-            fmt = '{} ... {} {} ({})'.format(
-                resp.url, resp.status, resp.desc, resp.latency)
-            self.assertEqual(str(resp), fmt)
-            count -= 1
-            total += 1
-            resp = resp.redirect
-        self.assertEqual(total, 3)
+        self.assertEqual(total, 1)
 
     def test_unresolvable_domains(self):
         resp = http_response('http://!.c')
