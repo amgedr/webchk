@@ -62,7 +62,7 @@ def parse_url(url):
 def _http_connect(loc):
     """Connects to the host and returns an HTTP or HTTPS connections."""
     if loc.scheme == "https":
-        ssl_context = ssl.SSLContext(protocol=ssl.PROTOCOL_SSLv23)
+        ssl_context = ssl.SSLContext()
         return http.client.HTTPSConnection(loc.netloc, context=ssl_context)
     return http.client.HTTPConnection(loc.netloc)
 
