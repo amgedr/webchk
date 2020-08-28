@@ -2,6 +2,19 @@
 History
 =======
 
+1.0.4 (2020-08-28)
+------------------
+
+* Fix crash when an URL check times out
+
+
+1.0.3 (2020-07-10)
+------------------
+
+* Modify the Python versions tox tests
+* Fix failing unit tests
+
+
 1.0.2 (2020-05-08)
 ------------------
 
