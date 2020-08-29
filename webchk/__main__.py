@@ -5,24 +5,27 @@ from .http import http_response
 from . import __version__
 
 
-def _process_url(url, parse_xml):
+def _process_url(url, output_file, parse_xml):
     resp = http_response(url, parse=parse_xml)
-    print(resp)
+    print(resp, file=output_file)
 
     follow = resp.redirect
     while follow:
-        print('   {}'.format(follow))
+        print('   {}'.format(follow), file=output_file)
         follow = follow.redirect
 
     if resp.sitemap_urls:
         for sitemap_url in resp.sitemap_urls:
-            print('   {}'.format(sitemap_url))
+            print('   {}'.format(sitemap_url), file=output_file)
 
 
-def process_urls(urls, list_only=False, parse_xml=False):
+def process_urls(urls, output_file, list_only=False, parse_xml=False):
     """Loops through the list of URLs and performs the checks.
 
+    output_file is the path to the file that will be written to.
+
     If list_only is True URLs will just be printed out without checking.
+
     If parse_xml is True URLs ending with .xml will be treated as sitemap
     files and will be downloaded to search its contents for more URLs to
     check.
@@ -34,7 +37,8 @@ def process_urls(urls, list_only=False, parse_xml=False):
             print(url)
             continue
 
-        thread = threading.Thread(target=_process_url, args=(url, parse_xml))
+        thread = threading.Thread(
+            target=_process_url, args=(url, output_file, parse_xml))
         thread.start()
         threads.append(thread)
 
@@ -63,12 +67,22 @@ def main():
         if args.input:
             urls.extend(read_input_file(args.input))
 
-        process_urls(urls, list_only=args.list, parse_xml=args.parse)
+        if args.output:
+            output_file = open(args.output, 'w')
+        else:
+            output_file = sys.stdout
+
+        process_urls(
+            urls, output_file, list_only=args.list, parse_xml=args.parse)
+
+        if args.output:
+            output_file.close()
 
     except FileExistsError as ex:
         print(ex, file=sys.stderr)
     except FileNotFoundError as ex:
-        print('The file {} does not exist'.format(ex.filename), file=sys.stderr)
+        print('The file {} does not exist'.format(
+            ex.filename), file=sys.stderr)
     except KeyboardInterrupt:
         print('\nProcess cancelled', file=sys.stderr)
     else:
