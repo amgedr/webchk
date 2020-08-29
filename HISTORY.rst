@@ -2,7 +2,7 @@
 History
 =======
 
-1.0.4 (2020-08-28)
+1.0.4 (2020-08-29)
 ------------------
 
 * Fix crash when an URL check times out
