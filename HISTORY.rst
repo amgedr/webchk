@@ -6,6 +6,7 @@ History
 ------------------
 
 * Fix crash when an URL check times out
+* Fix --output command-line option
 
 
 1.0.3 (2020-07-10)
