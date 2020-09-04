@@ -135,6 +135,6 @@ def http_response(url, parse=False):
 
     except socket.gaierror:
         result.desc = 'Could not resolve'
-    except TimeoutError:
+    except (TimeoutError, socket.timeout):
         result.desc = 'Operation timed out'
     return result
