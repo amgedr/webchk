@@ -30,6 +30,12 @@ def get_parser():
         action='store_true'
     )
     parser.add_argument(
+        '-t', '--timeout',
+        help='Response deadline in seconds (default is 3)',
+        type=int,
+        default=3,
+    )
+    parser.add_argument(
         '-s', '--summary',
         help='Print a summary only',
         action='store_true'

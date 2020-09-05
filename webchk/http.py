@@ -67,20 +67,21 @@ def parse_url(url):
     return loc
 
 
-def _http_connect(loc):
+def _http_connect(loc, timeout):
     """Connects to the host and returns an HTTP or HTTPS connections."""
     if loc.scheme == "https":
         ssl_context = ssl.SSLContext()
-        return http.client.HTTPSConnection(loc.netloc, context=ssl_context)
-    return http.client.HTTPConnection(loc.netloc)
+        return http.client.HTTPSConnection(
+            loc.netloc, context=ssl_context, timeout=timeout)
+    return http.client.HTTPConnection(loc.netloc, timeout=timeout)
 
 
-def _http_request(loc, get_request=False):
+def _http_request(loc, timeout, get_request=False):
     """Performs a HTTP request and return response in a Result object.
 
     Does a HEAD HTTP request if get_request is False and GET if True.
     """
-    conn = _http_connect(loc)
+    conn = _http_connect(loc, timeout)
     method = 'GET' if get_request else 'HEAD'
 
     conn.request(method, loc.path)
@@ -99,7 +100,7 @@ def _http_request(loc, get_request=False):
     return result
 
 
-def http_response(url, parse=False):
+def http_response(url, timeout, parse=False):
     """Returns the HTTP response code.
 
     If the response code is a temporary or permanent redirect then it
@@ -117,7 +118,7 @@ def http_response(url, parse=False):
     try:
         start = timeit.default_timer()
         get_request = parse and url.endswith('.xml')
-        result = _http_request(loc, get_request=get_request)
+        result = _http_request(loc, timeout, get_request=get_request)
         result.latency = '{:2.3}'.format(timeit.default_timer() - start)
 
         if 400 <= result.status < 500:
@@ -130,7 +131,7 @@ def http_response(url, parse=False):
             new_url = result.headers.get('Location')
             if new_url.startswith('/'):
                 new_url = '{}://{}{}'.format(loc.scheme, loc.netloc, new_url)
-            result.redirect = http_response(new_url, parse=parse)
+            result.redirect = http_response(new_url, timeout, parse=parse)
 
         if result.content:
             sitemap = urls_from_xml(result.content)
@@ -139,7 +140,7 @@ def http_response(url, parse=False):
                 # some sites include the sitemap's url in the sitemap
                 if s_url == result.url:
                     continue
-                result.sitemap_urls.append(http_response(s_url))
+                result.sitemap_urls.append(http_response(s_url, timeout))
 
     except socket.gaierror:
         result.desc = 'Could not resolve'
