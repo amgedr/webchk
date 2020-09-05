@@ -3,6 +3,7 @@ from urllib.parse import urlparse
 import socket
 import ssl
 import timeit
+
 from webchk.utils import urls_from_xml
 
 
