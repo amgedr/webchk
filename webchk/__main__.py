@@ -2,44 +2,43 @@ import sys
 import threading
 
 from .utils import get_parser, read_input_file
-from .http import http_response
+from .http import http_response, HTTPRequests
 from . import __version__
 
 
-def _process_url(url, output_file, parse_xml):
-    resp = http_response(url, parse=parse_xml)
-    print(resp, file=output_file)
+def _process_url(url, requests):
+    resp = http_response(url, requests.timeout, parse=requests.parse_xml)
+    print(resp, file=requests.output_file)
 
     follow = resp.redirect
     while follow:
-        print('   {}'.format(follow), file=output_file)
+        print('   {}'.format(follow), file=requests.output_file)
         follow = follow.redirect
 
     if resp.sitemap_urls:
         for sitemap_url in resp.sitemap_urls:
-            print('   {}'.format(sitemap_url), file=output_file)
+            print('   {}'.format(sitemap_url), file=requests.output_file)
 
 
-def process_urls(urls, output_file, list_only=False, parse_xml=False):
+def process_urls(requests: HTTPRequests):
     """Loops through the list of URLs and performs the checks.
 
-    output_file is the path to the file that will be written to.
+    requests.output_file is the path to the file that will be written to.
 
-    If list_only is True URLs will just be printed out without checking.
+    If requests.list_only is True URLs will be printed out without checking.
 
-    If parse_xml is True URLs ending with .xml will be treated as sitemap
-    files and will be downloaded to search its contents for more URLs to
-    check.
+    If requests.parse_xml is True URLs ending with .xml will be treated as
+    sitemap files and will be downloaded to search its contents for more URLs
+    to check.
     """
     threads = []
 
-    for url in urls:
-        if list_only:
+    for url in requests.urls:
+        if requests.list_only:
             print(url)
             continue
 
-        thread = threading.Thread(
-            target=_process_url, args=(url, output_file, parse_xml))
+        thread = threading.Thread(target=_process_url, args=(url, requests))
         thread.start()
         threads.append(thread)
 
@@ -61,23 +60,24 @@ def main():
         return 0
 
     try:
-        urls = []
+        requests = HTTPRequests(
+            urls=[],
+            output_file=open(args.output, 'w') if args.output else sys.stdout,
+            list_only=args.list,
+            parse_xml=args.parse,
+            timeout=args.timeout,
+        )
+
         if args.urls:
-            urls.extend(args.urls)
+            requests.urls.extend(args.urls)
 
         if args.input:
-            urls.extend(read_input_file(args.input))
+            requests.urls.extend(read_input_file(args.input))
+
+        process_urls(requests)
 
         if args.output:
-            output_file = open(args.output, 'w')
-        else:
-            output_file = sys.stdout
-
-        process_urls(
-            urls, output_file, list_only=args.list, parse_xml=args.parse)
-
-        if args.output:
-            output_file.close()
+            requests.output_file.close()
 
     except FileExistsError as ex:
         print(ex, file=sys.stderr)

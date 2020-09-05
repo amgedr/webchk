@@ -1,3 +1,4 @@
+import collections
 import http.client
 from urllib.parse import urlparse
 import socket
@@ -5,6 +6,12 @@ import ssl
 import timeit
 
 from webchk.utils import urls_from_xml
+
+
+HTTPRequests = collections.namedtuple(
+    'HTTPRequests',
+    ['urls', 'output_file', 'list_only', 'parse_xml', 'timeout']
+)
 
 
 class Result:
