@@ -21,7 +21,7 @@ def get_parser():
     )
     parser.add_argument(
         '-a', '--all',
-        help='Display the complete HTTP header',
+        help='Display the complete response HTTP header',
         action='store_true'
     )
     parser.add_argument(

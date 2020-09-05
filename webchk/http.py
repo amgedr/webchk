@@ -33,7 +33,7 @@ class Result:
         )
 
     def fill_headers(self, headers):
-        """Takes a list of tuples and convers it a dictionary."""
+        """Takes a list of tuples and converts it a dictionary."""
         self.headers = {h[0]: h[1] for h in headers}
 
 
