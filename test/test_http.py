@@ -1,5 +1,8 @@
 import unittest
+
 from webchk.http import http_response, parse_url
+
+TIMEOUT = 3
 
 
 class Http(unittest.TestCase):
@@ -23,12 +26,12 @@ class Http(unittest.TestCase):
 
     def test_http_response(self):
         for url, result in self.urls.items():
-            resp_code = http_response(url).status
+            resp_code = http_response(url, TIMEOUT).status
             self.assertEqual(resp_code, result[0], url)
 
     def test_redirect_follows(self):
         url = 'https://httpstat.us/307'
-        resp = http_response(url)
+        resp = http_response(url, TIMEOUT)
         total = 0
         while resp.redirect:
             fmt = '{} ... {} {} ({})'.format(
@@ -39,5 +42,5 @@ class Http(unittest.TestCase):
         self.assertEqual(total, 1)
 
     def test_unresolvable_domains(self):
-        resp = http_response('http://!.c')
+        resp = http_response('http://!.c', TIMEOUT)
         self.assertEqual(str(resp), 'http://!.c ... Could not resolve')

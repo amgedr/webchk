@@ -1,4 +1,5 @@
 import unittest
+
 from webchk.utils import read_input_file, get_parser, urls_from_xml
 
 

@@ -1,5 +1,6 @@
 import argparse
 from xml.etree import ElementTree
+
 from . import __cmd_description__
 
 
@@ -8,7 +9,8 @@ def get_parser():
     parser = argparse.ArgumentParser(
         prog='webchk',
         description=__cmd_description__,
-        formatter_class=argparse.RawTextHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     parser.add_argument('urls', nargs='*')
     parser.add_argument('-i', '--input', help='Read input from a file')
     parser.add_argument('-o', '--output', help='Save output to a file')
@@ -19,13 +21,19 @@ def get_parser():
     )
     parser.add_argument(
         '-a', '--all',
-        help='Display the complete HTTP header',
+        help='Display the complete response HTTP header',
         action='store_true'
     )
     parser.add_argument(
         '-l', '--list',
         help='Print URLs without checking them',
         action='store_true'
+    )
+    parser.add_argument(
+        '-t', '--timeout',
+        help='Response deadline in seconds (default is 3)',
+        type=int,
+        default=3,
     )
     parser.add_argument(
         '-s', '--summary',
@@ -50,8 +58,8 @@ def read_input_file(infile):
 
     The only filtering done is the removal of empty lines.
     """
-    with open(infile) as f:
-        lines = [line.strip() for line in f if line.strip()]
+    with open(infile) as inf:
+        lines = [line.strip() for line in inf if line.strip()]
     return lines
 
 
