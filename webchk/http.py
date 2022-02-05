@@ -146,4 +146,12 @@ def http_response(url, timeout, parse=False):
         result.desc = 'Could not resolve'
     except (TimeoutError, socket.timeout):
         result.desc = 'Operation timed out'
+    except (http.client.RemoteDisconnected) as exc:
+        result.desc = str(exc)
+    except (ConnectionRefusedError, ConnectionResetError) as exc:
+        result.desc = exc.strerror
+    except ssl.SSLCertVerificationError as exc:
+        result.desc = exc.verify_message
+    except ssl.SSLError:
+        result.desc = 'SSL is misconfigured'
     return result
