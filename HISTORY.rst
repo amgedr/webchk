@@ -2,6 +2,14 @@
 History
 =======
 
+1.1.0 (2022-02-05)
+------------------
+
+* Handle connection related errors
+* Improve reporting of HTTP redirects
+* Added --timeout or -t to modify respose deadline
+
+
 1.0.4 (2020-08-29)
 ------------------
 
