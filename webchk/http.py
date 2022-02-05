@@ -126,12 +126,23 @@ def http_response(url, timeout, parse=False):
 
         # if response code is a HTTP redirect then follow it recursively
         if result.status in (301, 302, 303, 307, 308):
-            # if URL in Location is a relative URL, ie starts with a /, then
-            # reconstruct the new URL using the current one's scheme and host
-            new_url = result.headers.get('Location')
-            if new_url.startswith('/'):
-                new_url = '{}://{}{}'.format(loc.scheme, loc.netloc, new_url)
-            result.redirect = http_response(new_url, timeout, parse=parse)
+            # if URL in Location (or location) is a relative URL, ie starts
+            # with a /, then reconstruct the new URL using the current one's
+            # scheme and host
+            if 'Location' in result.headers:
+                new_url = result.headers.get('Location')
+            elif 'location' in result.headers:
+                new_url = result.headers.get('location')
+
+            if not new_url:
+                result.desc = 'Redirect location not set'
+            elif new_url == result.url:
+                result.desc = 'URL redirecting to itself'
+            else:
+                if new_url.startswith('/'):
+                    new_url = '{}://{}{}'.format(
+                        loc.scheme, loc.netloc, new_url)
+                result.redirect = http_response(new_url, timeout, parse=parse)
 
         if result.content:
             sitemap = urls_from_xml(result.content)
