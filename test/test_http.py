@@ -44,3 +44,8 @@ class Http(unittest.TestCase):
     def test_unresolvable_domains(self):
         resp = http_response('http://!.c', TIMEOUT)
         self.assertEqual(str(resp), 'http://!.c ... Could not resolve')
+
+    def test_timeouts(self):
+        url = 'http://httpbin.org/delay/5'
+        resp = http_response(url, timeout=1)
+        self.assertEqual(resp.desc, 'Operation timed out')

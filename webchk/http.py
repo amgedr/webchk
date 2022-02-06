@@ -81,22 +81,26 @@ def _http_request(loc, timeout, get_request=False):
 
     Does a HEAD HTTP request if get_request is False and GET if True.
     """
-    conn = _http_connect(loc, timeout)
-    method = 'GET' if get_request else 'HEAD'
+    try:
+        conn = _http_connect(loc, timeout)
+        method = 'GET' if get_request else 'HEAD'
 
-    conn.request(method, loc.path)
-    resp = conn.getresponse()
+        conn.request(method, loc.path)
+        resp = conn.getresponse()
 
-    result = Result(loc.geturl())
-    result.status = resp.status
-    result.desc = resp.reason
-    result.fill_headers(resp.getheaders())
+        result = Result(loc.geturl())
+        result.status = resp.status
+        result.desc = resp.reason
+        result.fill_headers(resp.getheaders())
 
-    # status code is not 204 (no content) and not a redirect
-    if get_request and resp.status not in (204, 301, 302, 303, 307, 308):
-        result.content = resp.read().decode('utf-8')
+        # status code is not 204 (no content) and not a redirect
+        if get_request and resp.status not in (204, 301, 302, 303, 307, 308):
+            result.content = resp.read().decode('utf-8')
 
-    conn.close()
+    except TimeoutError:
+        raise
+    finally:
+        conn.close()
     return result
 
 
@@ -126,12 +130,23 @@ def http_response(url, timeout, parse=False):
 
         # if response code is a HTTP redirect then follow it recursively
         if result.status in (301, 302, 303, 307, 308):
-            # if URL in Location is a relative URL, ie starts with a /, then
-            # reconstruct the new URL using the current one's scheme and host
-            new_url = result.headers.get('Location')
-            if new_url.startswith('/'):
-                new_url = '{}://{}{}'.format(loc.scheme, loc.netloc, new_url)
-            result.redirect = http_response(new_url, timeout, parse=parse)
+            # if URL in Location (or location) is a relative URL, ie starts
+            # with a /, then reconstruct the new URL using the current one's
+            # scheme and host
+            if 'Location' in result.headers:
+                new_url = result.headers.get('Location')
+            elif 'location' in result.headers:
+                new_url = result.headers.get('location')
+
+            if not new_url:
+                result.desc = 'Redirect location not set'
+            elif new_url == result.url:
+                result.desc = 'URL redirecting to itself'
+            else:
+                if new_url.startswith('/'):
+                    new_url = '{}://{}{}'.format(
+                        loc.scheme, loc.netloc, new_url)
+                result.redirect = http_response(new_url, timeout, parse=parse)
 
         if result.content:
             sitemap = urls_from_xml(result.content)
@@ -146,4 +161,12 @@ def http_response(url, timeout, parse=False):
         result.desc = 'Could not resolve'
     except (TimeoutError, socket.timeout):
         result.desc = 'Operation timed out'
+    except (http.client.RemoteDisconnected) as exc:
+        result.desc = str(exc)
+    except (ConnectionRefusedError, ConnectionResetError) as exc:
+        result.desc = exc.strerror
+    except ssl.SSLCertVerificationError as exc:
+        result.desc = exc.verify_message
+    except ssl.SSLError:
+        result.desc = 'SSL is misconfigured'
     return result
