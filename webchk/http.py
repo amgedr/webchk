@@ -81,22 +81,26 @@ def _http_request(loc, timeout, get_request=False):
 
     Does a HEAD HTTP request if get_request is False and GET if True.
     """
-    conn = _http_connect(loc, timeout)
-    method = 'GET' if get_request else 'HEAD'
+    try:
+        conn = _http_connect(loc, timeout)
+        method = 'GET' if get_request else 'HEAD'
 
-    conn.request(method, loc.path)
-    resp = conn.getresponse()
+        conn.request(method, loc.path)
+        resp = conn.getresponse()
 
-    result = Result(loc.geturl())
-    result.status = resp.status
-    result.desc = resp.reason
-    result.fill_headers(resp.getheaders())
+        result = Result(loc.geturl())
+        result.status = resp.status
+        result.desc = resp.reason
+        result.fill_headers(resp.getheaders())
 
-    # status code is not 204 (no content) and not a redirect
-    if get_request and resp.status not in (204, 301, 302, 303, 307, 308):
-        result.content = resp.read().decode('utf-8')
+        # status code is not 204 (no content) and not a redirect
+        if get_request and resp.status not in (204, 301, 302, 303, 307, 308):
+            result.content = resp.read().decode('utf-8')
 
-    conn.close()
+    except TimeoutError:
+        raise
+    finally:
+        conn.close()
     return result
 
 
