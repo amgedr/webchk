@@ -98,7 +98,7 @@ def _http_request(loc, timeout, get_request=False):
 
         # status code is not 204 (no content) and not a redirect
         if get_request and resp.status not in (204, 301, 302, 303, 307, 308):
-            result.content = resp.read().decode('utf-8')
+            result.content = resp.read()
 
     except TimeoutError:
         raise
