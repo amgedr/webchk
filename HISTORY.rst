@@ -2,6 +2,13 @@
 History
 =======
 
+1.2.0 (2022-02-11)
+------------------
+
+* Default HTTP method is now HEAD
+* Added --get to switch to HTTP GET
+
+
 1.1.0 (2022-02-05)
 ------------------
 

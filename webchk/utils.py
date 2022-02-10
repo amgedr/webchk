@@ -25,6 +25,11 @@ def get_parser():
         action='store_true'
     )
     parser.add_argument(
+        '--get',
+        help='Perform HTTP GET request instead of HEAD',
+        action='store_true',
+    )
+    parser.add_argument(
         '-l', '--list',
         help='Print URLs without checking them',
         action='store_true'

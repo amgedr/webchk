@@ -10,7 +10,10 @@ from webchk.utils import urls_from_xml
 
 HTTPRequests = collections.namedtuple(
     'HTTPRequests',
-    ['urls', 'output_file', 'list_only', 'parse_xml', 'timeout']
+    [
+        'urls', 'output_file', 'list_only', 'parse_xml', 'timeout',
+        'get_request',
+    ]
 )
 
 
@@ -104,7 +107,7 @@ def _http_request(loc, timeout, get_request=False):
     return result
 
 
-def http_response(url, timeout, parse=False):
+def http_response(url, timeout, parse=False, get_request=False):
     """Returns the HTTP response code.
 
     If the response code is a temporary or permanent redirect then it
@@ -121,8 +124,11 @@ def http_response(url, timeout, parse=False):
 
     try:
         start = timeit.default_timer()
-        get_request = parse and url.endswith('.xml')
-        result = _http_request(loc, timeout, get_request=get_request)
+
+        # true if user wants HTTP GET or asked for the content to be parsed
+        force_get = get_request or (parse and url.endswith('.xml'))
+
+        result = _http_request(loc, timeout, get_request=force_get)
         result.latency = '{:2.3}'.format(timeit.default_timer() - start)
 
         if 400 <= result.status < 500:
@@ -146,16 +152,18 @@ def http_response(url, timeout, parse=False):
                 if new_url.startswith('/'):
                     new_url = '{}://{}{}'.format(
                         loc.scheme, loc.netloc, new_url)
-                result.redirect = http_response(new_url, timeout, parse=parse)
+                result.redirect = http_response(
+                    new_url, timeout, parse=parse, get_request=get_request)
 
-        if result.content:
+        if result.content and parse:
             sitemap = urls_from_xml(result.content)
             result.sitemap_urls = []
             for s_url in sitemap:
                 # some sites include the sitemap's url in the sitemap
                 if s_url == result.url:
                     continue
-                result.sitemap_urls.append(http_response(s_url, timeout))
+                result.sitemap_urls.append(
+                    http_response(s_url, timeout, get_request=get_request))
 
     except socket.gaierror:
         result.desc = 'Could not resolve'

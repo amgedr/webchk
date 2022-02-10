@@ -6,8 +6,13 @@ from .http import http_response, HTTPRequests
 from . import __version__
 
 
-def _process_url(url, requests):
-    resp = http_response(url, requests.timeout, parse=requests.parse_xml)
+def _process_url(url, requests, get_request):
+    resp = http_response(
+        url=url,
+        timeout=requests.timeout,
+        parse=requests.parse_xml,
+        get_request=get_request,
+    )
     print(resp, file=requests.output_file)
 
     follow = resp.redirect
@@ -38,7 +43,13 @@ def process_urls(requests: HTTPRequests):
             print(url)
             continue
 
-        thread = threading.Thread(target=_process_url, args=(url, requests))
+        thread = threading.Thread(
+            target=_process_url, args=(
+                url,
+                requests,
+                requests.get_request,
+            )
+        )
         thread.start()
         threads.append(thread)
 
@@ -66,6 +77,7 @@ def main():
             list_only=args.list,
             parse_xml=args.parse,
             timeout=args.timeout,
+            get_request=args.get,
         )
 
         if args.urls:
