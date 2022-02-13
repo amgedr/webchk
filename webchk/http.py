@@ -1,20 +1,30 @@
-import collections
 import http.client
 from urllib.parse import urlparse
 import socket
 import ssl
+import sys
 import timeit
 
+from . import __version__
 from webchk.utils import urls_from_xml
 
 
-HTTPRequests = collections.namedtuple(
-    'HTTPRequests',
-    [
-        'urls', 'output_file', 'list_only', 'parse_xml', 'timeout',
-        'get_request',
-    ]
-)
+class HTTPRequests:
+    def __init__(self, urls, output_file=sys.stdout, list_only=False,
+                 parse_xml=False, timeout=3, show_headers=False,
+                 headers=None, get_request=False, user_agent=None) -> None:
+        self.urls = urls
+        self.output_file = output_file
+        self.list_only = list_only
+        self.parse_xml = parse_xml
+        self.timeout = timeout
+        self.get_request = get_request
+        self.show_headers = show_headers
+
+        self.headers = headers if headers is not None else {}
+        if not user_agent:
+            user_agent = f'webchk v{__version__}'
+        self.headers['User-Agent'] = user_agent
 
 
 class Result:
@@ -79,7 +89,7 @@ def _http_connect(loc, timeout):
     return http.client.HTTPConnection(loc.netloc, timeout=timeout)
 
 
-def _http_request(loc, timeout, get_request=False):
+def _http_request(loc, timeout, headers=None, get_request=False):
     """Performs a HTTP request and return response in a Result object.
 
     Does a HEAD HTTP request if get_request is False and GET if True.
@@ -88,7 +98,9 @@ def _http_request(loc, timeout, get_request=False):
         conn = _http_connect(loc, timeout)
         method = 'GET' if get_request else 'HEAD'
 
-        conn.request(method, loc.path)
+        if headers is None:
+            headers = {}
+        conn.request(method, loc.path, headers=headers)
         resp = conn.getresponse()
 
         result = Result(loc.geturl())
@@ -107,7 +119,7 @@ def _http_request(loc, timeout, get_request=False):
     return result
 
 
-def http_response(url, timeout, parse=False, get_request=False):
+def http_response(url, requests: HTTPRequests):
     """Returns the HTTP response code.
 
     If the response code is a temporary or permanent redirect then it
@@ -126,9 +138,10 @@ def http_response(url, timeout, parse=False, get_request=False):
         start = timeit.default_timer()
 
         # true if user wants HTTP GET or asked for the content to be parsed
-        force_get = get_request or (parse and url.endswith('.xml'))
+        force_get = requests.get_request or \
+            (requests.parse_xml and url.endswith('.xml'))
 
-        result = _http_request(loc, timeout, get_request=force_get)
+        result = _http_request(loc, requests.timeout, get_request=force_get)
         result.latency = '{:2.3}'.format(timeit.default_timer() - start)
 
         if 400 <= result.status < 500:
@@ -152,18 +165,16 @@ def http_response(url, timeout, parse=False, get_request=False):
                 if new_url.startswith('/'):
                     new_url = '{}://{}{}'.format(
                         loc.scheme, loc.netloc, new_url)
-                result.redirect = http_response(
-                    new_url, timeout, parse=parse, get_request=get_request)
+                result.redirect = http_response(new_url, requests)
 
-        if result.content and parse:
+        if result.content and requests.parse_xml:
             sitemap = urls_from_xml(result.content)
             result.sitemap_urls = []
             for s_url in sitemap:
                 # some sites include the sitemap's url in the sitemap
                 if s_url == result.url:
                     continue
-                result.sitemap_urls.append(
-                    http_response(s_url, timeout, get_request=get_request))
+                result.sitemap_urls.append(http_response(s_url, requests))
 
     except socket.gaierror:
         result.desc = 'Could not resolve'

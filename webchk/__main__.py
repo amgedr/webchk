@@ -6,13 +6,8 @@ from .http import http_response, HTTPRequests
 from . import __version__
 
 
-def _process_url(url, requests, get_request):
-    resp = http_response(
-        url=url,
-        timeout=requests.timeout,
-        parse=requests.parse_xml,
-        get_request=get_request,
-    )
+def _process_url(url, requests: HTTPRequests):
+    resp = http_response(url, requests)
     print(resp, file=requests.output_file)
 
     if requests.show_headers:
@@ -47,11 +42,8 @@ def process_urls(requests: HTTPRequests):
             continue
 
         thread = threading.Thread(
-            target=_process_url, args=(
-                url,
-                requests,
-                requests.get_request,
-            )
+            target=_process_url,
+            args=(url, requests)
         )
         thread.start()
         threads.append(thread)
