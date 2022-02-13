@@ -1,6 +1,8 @@
 import unittest
 
-from webchk.utils import read_input_file, get_parser, urls_from_xml
+from webchk.utils import (
+    read_input_file, get_parser, urls_from_xml, format_headers
+)
 
 
 class FileIOTest(unittest.TestCase):
@@ -46,3 +48,29 @@ class XmlParserTest(unittest.TestCase):
         ]
         urls = urls_from_xml(self.xml)
         self.assertEqual(urls, urls_list)
+
+
+class HeadersFormatterTest(unittest.TestCase):
+    def test_valid_headers(self):
+        cases = {
+            'Connection: keep-alive\nContent-Length: 5386':
+            {
+                'Connection': 'keep-alive',
+                'Content-Length': '5386',
+            },
+            'Cache-Control: no-cache\nContent-Type: text/html':
+            {
+                'Cache-Control': 'no-cache',
+                'Content-Type': 'text/html',
+            }
+        }
+
+        for expected, case in cases.items():
+            self.assertEqual(format_headers(case), expected)
+
+    def test_invalid_value(self):
+        cases = [[], 123, 'abc']
+
+        for case in cases:
+            with self.assertRaises(ValueError):
+                format_headers(case)

@@ -1,7 +1,7 @@
 import sys
 import threading
 
-from .utils import get_parser, read_input_file
+from .utils import get_parser, read_input_file, format_headers
 from .http import http_response, HTTPRequests
 from . import __version__
 
@@ -14,6 +14,9 @@ def _process_url(url, requests, get_request):
         get_request=get_request,
     )
     print(resp, file=requests.output_file)
+
+    if requests.show_headers:
+        print('{}\n'.format(format_headers(resp.headers)))
 
     follow = resp.redirect
     while follow:
@@ -77,6 +80,7 @@ def main():
             list_only=args.list,
             parse_xml=args.parse,
             timeout=args.timeout,
+            show_headers=args.all,
             get_request=args.get,
         )
 

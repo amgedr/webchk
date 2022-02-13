@@ -77,3 +77,14 @@ def urls_from_xml(data):
             if j.tag.endswith("loc"):
                 urls.append(j.text.strip())
     return urls
+
+
+def format_headers(headers: dict) -> str:
+    if not isinstance(headers, dict):
+        raise ValueError
+
+    indent = ' '
+    formatted = []
+    for key, val in headers.items():
+        formatted.append('{}{}: {}'.format(indent, key, val))
+    return '\n'.join(formatted)
