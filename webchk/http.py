@@ -94,6 +94,7 @@ def _http_connect(loc, timeout):
 
 def _http_request(loc, req: HTTPRequests):
     """Performs a HTTP request and return response in a Result object."""
+    conn = None
     try:
         conn = _http_connect(loc, req.timeout)
         method = 'GET' if req.get_request or req.parse_xml else 'HEAD'
@@ -113,8 +114,9 @@ def _http_request(loc, req: HTTPRequests):
 
     except TimeoutError:
         raise
-    else:
-        conn.close()
+    finally:
+        if conn:
+            conn.close()
     return result
 
 
