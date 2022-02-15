@@ -53,12 +53,12 @@ class XmlParserTest(unittest.TestCase):
 class HeadersFormatterTest(unittest.TestCase):
     def test_valid_headers(self):
         cases = {
-            'Connection: keep-alive\nContent-Length: 5386':
+            ' Connection: keep-alive\n Content-Length: 5386':
             {
                 'Connection': 'keep-alive',
                 'Content-Length': '5386',
             },
-            'Cache-Control: no-cache\nContent-Type: text/html':
+            ' Cache-Control: no-cache\n Content-Type: text/html':
             {
                 'Cache-Control': 'no-cache',
                 'Content-Type': 'text/html',
