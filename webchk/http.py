@@ -114,7 +114,7 @@ def _http_request(loc, timeout, headers=None, get_request=False):
 
     except TimeoutError:
         raise
-    finally:
+    else:
         conn.close()
     return result
 
@@ -180,8 +180,10 @@ def http_response(url, requests: HTTPRequests):
         result.desc = 'Could not resolve'
     except (TimeoutError, socket.timeout):
         result.desc = 'Operation timed out'
-    except (http.client.RemoteDisconnected) as exc:
+    except http.client.RemoteDisconnected as exc:
         result.desc = str(exc)
+    except http.client.InvalidURL:
+        result.desc = 'Invalid URL'
     except (ConnectionRefusedError, ConnectionResetError) as exc:
         result.desc = exc.strerror
     except ssl.SSLCertVerificationError as exc:
