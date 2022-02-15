@@ -30,6 +30,12 @@ def get_parser():
         action='store_true',
     )
     parser.add_argument(
+        '--auth',
+        help='Set Authentication header',
+        type=str,
+        default='',
+    )
+    parser.add_argument(
         '--agent',
         help='Set a custom user-agent',
         type=str,

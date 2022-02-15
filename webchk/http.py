@@ -12,7 +12,8 @@ from webchk.utils import urls_from_xml
 class HTTPRequests:
     def __init__(self, urls, output_file=sys.stdout, list_only=False,
                  parse_xml=False, timeout=3, show_headers=False,
-                 headers=None, get_request=False, user_agent=None) -> None:
+                 headers=None, get_request=False, auth=None,
+                 user_agent=None) -> None:
         self.urls = urls
         self.output_file = output_file
         self.list_only = list_only
@@ -25,6 +26,8 @@ class HTTPRequests:
         if not user_agent:
             user_agent = f'webchk v{__version__}'
         self.headers['User-Agent'] = user_agent
+        if auth:
+            self.headers['Authorization'] = auth
 
 
 class Result:

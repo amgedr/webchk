@@ -75,6 +75,7 @@ def main():
             show_headers=args.all,
             get_request=args.get,
             user_agent=args.agent,
+            auth=args.auth,
         )
 
         if args.urls:
