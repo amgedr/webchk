@@ -89,18 +89,13 @@ def _http_connect(loc, timeout):
     return http.client.HTTPConnection(loc.netloc, timeout=timeout)
 
 
-def _http_request(loc, timeout, headers=None, get_request=False):
-    """Performs a HTTP request and return response in a Result object.
-
-    Does a HEAD HTTP request if get_request is False and GET if True.
-    """
+def _http_request(loc, req: HTTPRequests):
+    """Performs a HTTP request and return response in a Result object."""
     try:
-        conn = _http_connect(loc, timeout)
-        method = 'GET' if get_request else 'HEAD'
+        conn = _http_connect(loc, req.timeout)
+        method = 'GET' if req.get_request or req.parse_xml else 'HEAD'
 
-        if headers is None:
-            headers = {}
-        conn.request(method, loc.path, headers=headers)
+        conn.request(method, loc.path, headers=req.headers)
         resp = conn.getresponse()
 
         result = Result(loc.geturl())
@@ -109,7 +104,8 @@ def _http_request(loc, timeout, headers=None, get_request=False):
         result.fill_headers(resp.getheaders())
 
         # status code is not 204 (no content) and not a redirect
-        if get_request and resp.status not in (204, 301, 302, 303, 307, 308):
+        is_not_redirect = resp.status not in (204, 301, 302, 303, 307, 308)
+        if (req.get_request or req.parse_xml) and is_not_redirect:
             result.content = resp.read()
 
     except TimeoutError:
@@ -137,11 +133,7 @@ def http_response(url, requests: HTTPRequests):
     try:
         start = timeit.default_timer()
 
-        # true if user wants HTTP GET or asked for the content to be parsed
-        force_get = requests.get_request or \
-            (requests.parse_xml and url.endswith('.xml'))
-
-        result = _http_request(loc, requests.timeout, get_request=force_get)
+        result = _http_request(loc, requests)
         result.latency = '{:2.3}'.format(timeit.default_timer() - start)
 
         if 400 <= result.status < 500:
@@ -168,6 +160,7 @@ def http_response(url, requests: HTTPRequests):
                 result.redirect = http_response(new_url, requests)
 
         if result.content and requests.parse_xml:
+            requests.parse_xml = False
             sitemap = urls_from_xml(result.content)
             result.sitemap_urls = []
             for s_url in sitemap:

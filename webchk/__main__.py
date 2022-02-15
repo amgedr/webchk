@@ -74,6 +74,7 @@ def main():
             timeout=args.timeout,
             show_headers=args.all,
             get_request=args.get,
+            user_agent=args.agent,
         )
 
         if args.urls:

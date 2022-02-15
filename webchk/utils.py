@@ -30,6 +30,12 @@ def get_parser():
         action='store_true',
     )
     parser.add_argument(
+        '--agent',
+        help='Set a custom user-agent',
+        type=str,
+        default='',
+    )
+    parser.add_argument(
         '-l', '--list',
         help='Print URLs without checking them',
         action='store_true'
