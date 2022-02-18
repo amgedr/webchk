@@ -30,6 +30,18 @@ def get_parser():
         action='store_true',
     )
     parser.add_argument(
+        '--auth',
+        help='Set Authentication header',
+        type=str,
+        default='',
+    )
+    parser.add_argument(
+        '--agent',
+        help='Set a custom user-agent',
+        type=str,
+        default='',
+    )
+    parser.add_argument(
         '-l', '--list',
         help='Print URLs without checking them',
         action='store_true'
@@ -77,3 +89,14 @@ def urls_from_xml(data):
             if j.tag.endswith("loc"):
                 urls.append(j.text.strip())
     return urls
+
+
+def format_headers(headers: dict) -> str:
+    if not isinstance(headers, dict):
+        raise ValueError
+
+    indent = ' '
+    formatted = []
+    for key, val in headers.items():
+        formatted.append('{}{}: {}'.format(indent, key, val))
+    return '\n'.join(formatted)

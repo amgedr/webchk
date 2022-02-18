@@ -1,19 +1,17 @@
 import sys
 import threading
 
-from .utils import get_parser, read_input_file
+from .utils import get_parser, read_input_file, format_headers
 from .http import http_response, HTTPRequests
 from . import __version__
 
 
-def _process_url(url, requests, get_request):
-    resp = http_response(
-        url=url,
-        timeout=requests.timeout,
-        parse=requests.parse_xml,
-        get_request=get_request,
-    )
+def _process_url(url, requests: HTTPRequests):
+    resp = http_response(url, requests)
     print(resp, file=requests.output_file)
+
+    if requests.show_headers:
+        print('{}\n'.format(format_headers(resp.headers)))
 
     follow = resp.redirect
     while follow:
@@ -44,11 +42,8 @@ def process_urls(requests: HTTPRequests):
             continue
 
         thread = threading.Thread(
-            target=_process_url, args=(
-                url,
-                requests,
-                requests.get_request,
-            )
+            target=_process_url,
+            args=(url, requests)
         )
         thread.start()
         threads.append(thread)
@@ -77,7 +72,10 @@ def main():
             list_only=args.list,
             parse_xml=args.parse,
             timeout=args.timeout,
+            show_headers=args.all,
             get_request=args.get,
+            user_agent=args.agent,
+            auth=args.auth,
         )
 
         if args.urls:
