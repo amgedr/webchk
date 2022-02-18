@@ -11,7 +11,7 @@ setup(
     version='1.1.0',
     packages=['webchk'],
     test_suite='test',
-    url='https://codehill.com/projects/webchk',
+    url='https://webchk.codehill.com',
     license="MIT license",
     author='Amged Rustom',
     author_email='amgadhs@codehill.com',
