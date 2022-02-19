@@ -2,13 +2,15 @@
 History
 =======
 
-1.2.0 (2022-02-18)
+1.2.0 (2022-02-19)
 ------------------
 
 * Default HTTP method is now HEAD
 * Added --get to switch to HTTP GET
 * Added --agent to set the User-Agent
 * Added --auth for adding Authorization header
+* Prevent timeouts less than 1
+* Display results immediately instead of at the end
 
 
 1.1.0 (2022-02-05)

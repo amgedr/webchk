@@ -29,6 +29,16 @@ class HTTPRequests:
         if auth:
             self.headers['Authorization'] = auth
 
+    @property
+    def timeout(self):
+        return self._timeout
+
+    @timeout.setter
+    def timeout(self, value):
+        self._timeout = int(value)
+        if self._timeout < 1:
+            raise ValueError('Timeout can not be less than 1 second')
+
 
 class Result:
     """Holds result of an URL check.

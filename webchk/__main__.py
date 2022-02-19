@@ -89,6 +89,8 @@ def main():
         if args.output:
             requests.output_file.close()
 
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
     except FileExistsError as ex:
         print(ex, file=sys.stderr)
     except FileNotFoundError as ex:
