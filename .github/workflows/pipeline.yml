@@ -1,0 +1,19 @@
+name: Test and publish to Test PyPI and PyPI
+on: push
+
+jobs:
+  Test-and-publish:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2.4.0
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.9
+    - name: Install requirements
+      run: pip3 install -r requirements_dev.txt --user
+    - name: Lint
+      run: flake8
+    - name: Test
+      run: python -m unittest test
