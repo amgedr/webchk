@@ -14,8 +14,8 @@ setup(
     url='https://webchk.codehill.com',
     license="MIT license",
     author='Amged Rustom',
-    author_email='amgadhs@codehill.com',
-    description='A command-line tool for checking HTTP status codes and response headers of URLs',
+    description='A command-line tool for checking HTTP status codes and ' +
+                'response headers of URLs',
     long_description=readme + '\n\n' + history,
     keywords='webchk site management www http link check',
     zip_safe=False,

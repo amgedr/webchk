@@ -1,2 +1,2 @@
-from .test_utils import FileIOTest, CommandParserTest, XmlParserTest
-from .test_http import Http
+from .test_utils import FileIOTest, CommandParserTest, XmlParserTest  # noqa F401
+from .test_http import Http  # noqa F401
