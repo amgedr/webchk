@@ -6,9 +6,6 @@ webchk
 .. image:: https://img.shields.io/pypi/v/webchk.svg
         :target: https://pypi.org/project/webchk/
 
-.. image:: https://img.shields.io/travis/amgedr/webchk.svg
-        :target: https://travis-ci.org/amgedr/webchk
-
 .. image:: https://img.shields.io/github/license/amgedr/webchk.svg
         :target: https://github.com/amgedr/webchk/blob/master/LICENSE
 
