@@ -9,6 +9,9 @@ from . import __version__
 from webchk.utils import urls_from_xml
 
 
+REDIRECT_LIMIT = 5  # limit of acceptable redirects from an URL
+
+
 class HTTPRequests:
     def __init__(self, urls, output_file=sys.stdout, list_only=False,
                  parse_xml=False, timeout=3, show_headers=False,
@@ -21,6 +24,7 @@ class HTTPRequests:
         self.timeout = timeout
         self.get_request = get_request
         self.show_headers = show_headers
+        self.redirect_count = 0
 
         self.headers = headers if headers is not None else {}
         if not user_agent:
@@ -164,10 +168,14 @@ def http_response(url, requests: HTTPRequests):
             elif 'location' in result.headers:
                 new_url = result.headers.get('location')
 
+            requests.redirect_count += 1
+
             if not new_url:
                 result.desc = 'Redirect location not set'
             elif new_url == result.url:
                 result.desc = 'URL redirecting to itself'
+            elif requests.redirect_count == REDIRECT_LIMIT:
+                result.desc = 'To many redirects'
             else:
                 if new_url.startswith('/'):
                     new_url = '{}://{}{}'.format(
