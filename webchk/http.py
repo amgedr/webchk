@@ -170,17 +170,18 @@ def http_response(url, requests: HTTPRequests):
 
             requests.redirect_count += 1
 
-            if not new_url:
+            try:
+                if new_url == result.url:
+                    result.desc = 'URL redirecting to itself'
+                elif requests.redirect_count == REDIRECT_LIMIT:
+                    result.desc = 'To many redirects'
+                else:
+                    if new_url.startswith('/'):
+                        new_url = '{}://{}{}'.format(
+                            loc.scheme, loc.netloc, new_url)
+                    result.redirect = http_response(new_url, requests)
+            except UnboundLocalError:
                 result.desc = 'Redirect location not set'
-            elif new_url == result.url:
-                result.desc = 'URL redirecting to itself'
-            elif requests.redirect_count == REDIRECT_LIMIT:
-                result.desc = 'To many redirects'
-            else:
-                if new_url.startswith('/'):
-                    new_url = '{}://{}{}'.format(
-                        loc.scheme, loc.netloc, new_url)
-                result.redirect = http_response(new_url, requests)
 
         if result.content and requests.parse_xml:
             requests.parse_xml = False
